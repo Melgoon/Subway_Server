@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- namespace속성 : 아래에서 작성한 SQL을 호출할 때 같이 사용된다. -->
+<sqlMap namespace="pay">
+	<!--
+		이 영역에 sql문에 맞는 태그를 사용하여 SQL문을 기술한다.
+
+		사용할 수 있는 기본적인 태그들
+		<select> ~~~ </select>
+		<insert> ~~~ </insert>
+		<update> ~~~ </update>
+		<delete> ~~~ </delete>
+	 -->
+
+	 <!--
+	 	위 태그에서 사용되는 속성들
+	 		1) id속성 : 해당 태그를 호출할 때 <sqlMap>태그의 namespace와
+	 							  연결하여 사용하는 이름
+	 		2) parameterClass속성 : sql문에 사용될 데이터가 들어있는 객체를
+	 							  지정한다.
+	 							  (보통 VO클래스, 자바의 자료형이름 등이 사용된다.)
+	 							  (typeAlia로 지정한 alias명을 사용할 수 있다.)
+			3) resultClass속성 : select문을 실행한 결과를 담을 객체를 지정한다.
+								 (보통 VO클래스나 자바의 자료형이름을 사용한다.)
+	 -->
+	<!--<insert id="insertdelivery" parameterClass="payVO">
+		insert into pay (pay_no,pay_way,reser_no,deli_no) values ((select nvl(max(pay_no),0)+1 from pay_no),#pay_way#,(select nvl(max(reser_no),0)+1 from reser_no),(select nvl(max(deli_no),0)+1 from deli_no))
+	</insert>-->
+
+	<!--<insert id="insertdelivery" parameterClass="payVO">
+		insert into pay (pay_no,pay_way,deli_no) values ((select nvl(max(pay_no),0)+1 from pay),#pay_way#,(select nvl(max(deli_no),0)+1 from DELIVERY ))
+	</insert>
+
+	<insert id="insertreservation" parameterClass="payVO">
+		insert into pay (pay_no,pay_way,reser_no) values ((select nvl(max(pay_no),0)+1 from pay),#pay_way#,(select nvl(max(reser_no),0)+1 from RESERVATION))
+	</insert>-->
+
+
+
+	<!--<insert id="insertreservation" parameterClass="payVO">
+		insert into order_his (Order_His_No,Order_His_Content,Order_His_Price,Order_His_Br,Order_His_Time,Order_His_Date) values ((select nvl(max(Order_His_No),0)+1 from order_his),#Order_His_Content#,#Order_His_Price#,'예약',#Order_His_Time#,#Order_His_Date#)
+	</insert>
+
+	<select id="selectreservation" resultClass="orderhisVO">
+		select * from order_his where Order_His_Br = '예약' ORDER BY Order_His_No DESC
+	</select>
+
+	<select id="selectdelivery" resultClass="orderhisVO">
+		select * from order_his where Order_His_Br = '배달' ORDER BY Order_His_No DESC
+	</select>-->
+
+
+	<!--결제할 방법에 따라 결제시 테이블에 들어갈 값이 달라야 한다. insert문 필요 그리고 결제가 되면 cart부분의 cart_chk_buy가 1로 올라가야한다.-->
+
+	<!-- 결제할 때, Pay_no가 1씩 오르고 Deli_no를 가져온다.-->
+	<insert id="delipayinsert" parameterClass="payVO">
+		insert into pay(pay_no,pay_way,deli_no) values((select nvl(max(pay_no),0)+1 from pay),'kakao',(select nvl(max(DELI_NO),0) from DELIVERY))
+	</insert>
+
+	<!-- 결제할 때, Pay_no가 1씩 오르고 Reser_no를 가져온다 -->
+	<insert id="reserpayinsert" parameterClass="payVO">
+		insert into pay(pay_no,pay_way,reser_no) values((select nvl(max(pay_no),0)+1 from pay),'kakao',(select nvl(max(RESER_NO),0) from RESERVATION))
+	</insert>
+
+	<select id="lastpay" resultClass="payVO">
+select PAY_NO,PAY_WAY,nvl(RESER_NO,0) as RESER_NO,nvl(DELI_NO,0) DELI_NO from PAY where PAY_NO = (select count(*) from PAY)
+	</select>
+
+
+</sqlMap>
+
+
+
+
+
+

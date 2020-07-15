@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- namespace속성 : 아래에서 작성한 SQL을 호출할 때 같이 사용된다. -->			
+<sqlMap namespace="reservationVO">
+	<!-- 
+		이 영역에 sql문에 맞는 태그를 사용하여 SQL문을 기술한다.
+		
+		사용할 수 있는 기본적인 태그들
+		<select> ~~~ </select>
+		<insert> ~~~ </insert>
+		<update> ~~~ </update>
+		<delete> ~~~ </delete>
+	 -->
+	 
+	 <!-- 
+	 	위 태그에서 사용되는 속성들
+	 		1) id속성 : 해당 태그를 호출할 때 <sqlMap>태그의 namespace와
+	 							  연결하여 사용하는 이름
+	 		2) parameterClass속성 : sql문에 사용될 데이터가 들어있는 객체를
+	 							  지정한다. 
+	 							  (보통 VO클래스, 자바의 자료형이름 등이 사용된다.)
+	 							  (typeAlia로 지정한 alias명을 사용할 수 있다.)							  
+			3) resultClass속성 : select문을 실행한 결과를 담을 객체를 지정한다.
+								 (보통 VO클래스나 자바의 자료형이름을 사용한다.)							 
+	 -->
+
+	<!--<insert id="insert" parameterClass="reservationVO">
+			insert into reservation(reser_no,reser_name,reser_price,reser_time,reser_date) values((select nvl(max(reser_no),0)+1 from reservation),#reser_name#,#reser_price#,#reser_time#,#reser_date#)
+	</insert>
+
+	<select id="select" resultClass="reservationVO">
+		select * from reservation
+	</select>
+
+	<select id="choisselect" resultClass="reservationVO">
+		select * from reservation where reser_no = #reser_no#
+	</select>
+
+	<update id="updateok" parameterClass="reservationVO">
+		update reservation set reser_status = '예약 접수' where reser_no = #reser_no#
+	</update>
+
+	<update id="updaterefusal" parameterClass="reservationVO">
+		update reservation set reser_status = '예약 거부' where reser_no = #reser_no#
+	</update>
+
+
+	<insert id="insertreservation" parameterClass="reservationVO">
+		insert into reservation(reser_name,reser_no,order_no,reser_time,reser_date,reser_jijum) values((select nvl(max(reser_no),0)+1 from reservation),(select nvl(max(order_no),0)+1 from order_table),#reser_time#,#reser_date#,#reser_jijum#)
+	</insert>-->
+
+	<!--<insert id="" parameterClass="">
+
+	</insert>-->
+
+	<!-- 주문테이블에서 가져온 데이터 값과 텍스트 필드에 입력한 값들을 예약(Reservation)에 저장한다. -->
+	<insert id="insert" parameterClass="reservationVO">
+		insert into reservation (Reser_no,Reser_name,Reser_price,Reser_jijum,Reser_time,Order_no,Cart_no,Reser_date,Reser_status) values ((select nvl(max(RESER_NO),0)+1 from RESERVATION),#Reser_name#,#Reser_price#,#Reser_jijum#,#Reser_time#,(select nvl(max(order_no),0) from order_table),(select nvl(max(CART_NO),0) from ORDER_TABLE),#Reser_date#,'TEST')
+	</insert>
+	<!-- 예약 주문한 내역을 전부 조회한다. -->
+	<select id="rserselect" resultClass="reservationVO">
+		select * from reservation
+	</select>
+
+	<!-- 예약 주문 내역에서 상세보기 후, 접수 버튼을 누르면 업데이트로 예약을 접수하거나 거절한다
+	  이때 업데이트하려는 데이터를 reser_no로 조건을 걸어주고 선택된 reser_no의 데이터만 업데이트한다.-->
+	<update id="reserupdate" parameterClass="reservationVO">
+		update reservation set Reser_status = #Reser_status# where reser_no = #reser_no#
+	</update>
+
+	<select id="select" parameterClass="Integer" resultClass="reservationVO">
+		select * from RESERVATION where RESER_NO = #data#
+	</select>
+
+	<select id="jijum" parameterClass="String" resultClass="reservationVO">
+		select Reser_name, Reser_price,Reser_date from RESERVATION where Reser_jijum = #data#
+	</select>
+
+
+</sqlMap>
+
+
+
+
+
+

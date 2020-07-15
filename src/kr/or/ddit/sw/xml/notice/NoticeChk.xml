@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- namespace속성 : 아래에서 작성한 SQL을 호출할 때 같이 사용된다. -->
+<sqlMap namespace="noticeChk">
+<!--	<select id="ReadNoSelect" resultClass="Integer" parameterClass="String">-->
+<!--	select notice_mem_chk.notice_no as notice_no from notice_mem_chk, notice-->
+<!--	where notice_mem_chk.notice_no = notice.notice_no and notice_mem_chk.mem_check=1 and mem_id=#data#-->
+<!--	</select>-->
+    <select id="ReadNoSelect" resultClass="noticeVO" parameterClass="String">
+	select notice.NOTICE_NO NOTICE_NO, notice.NOTICE_NAME NOTICE_NAME, notice.NOTICE_CONTENT NOTICE_CONTENT, notice.NOTICE_CHK NOTICE_CHK
+	from notice_mem_chk ,notice
+	where notice_mem_chk.notice_no = notice.notice_no and notice_mem_chk.mem_check =1  and mem_id =#data#
+	</select>
+
+<!--	<select id="noticeNumber" resultClass="Integer" parameterClass="String">-->
+<!--		select to_number(count(*)) from notice_mem_chk, notice-->
+<!--where notice_mem_chk.notice_no = notice.notice_no and notice.notice_chk=1 and mem_id=#data#-->
+
+<!--	</select>-->
+
+	<select id="noticeNumber" resultClass="Integer" parameterClass="String">
+		select to_number(count(*)) from notice ,notice_mem_chk
+		where notice_mem_chk.notice_no = notice.notice_no AND notice_mem_chk.mem_id = #data#
+		AND notice_mem_chk.mem_check=1
+
+	</select>
+
+
+<!--	<update id="updateNo" parameterClass="Integer">-->
+<!--		update notice set notice_chk=0 where notice_no=#data#-->
+<!--	</update>-->
+
+	<update id="updateNo" parameterClass="noticechkVO">
+		update notice_mem_chk set mem_check=0 where  notice_no= #NOTICE_NO# and mem_id = #MEM_ID#
+	</update>
+
+
+	<select id="disSelectNO" resultClass="Integer" parameterClass="String">
+		select distinct notice.notice_no
+		from member, notice_mem_chk,notice
+		where notice_mem_chk.notice_no = notice.notice_no AND notice.notice_chk=1 AND member.mem_id=#data#
+
+	</select>
+	<delete id="deleteChk" parameterClass="Integer">
+		delete from notice_mem_chk where notice_no=#NOTICE_NO#
+	</delete>
+
+	<insert id="insertChk" parameterClass="noticechkVO">
+		insert into notice_mem_chk values(#NOTICE_NO#,1,#MEM_ID#)
+	</insert>
+
+	<select id="newUserChk" parameterClass="String" resultClass="String">
+	select distinct mem_id
+	from notice_mem_chk
+	where mem_id= #data#
+	</select>
+
+	<select id="noticeNo" resultClass="Integer">
+		select notice_no from notice order by notice_no
+	</select>
+
+	<select id="noticeChkNo" parameterClass="String" resultClass="Integer">
+		select notice_no
+		from notice_mem_chk
+		where mem_id = #data#
+	</select>
+</sqlMap>

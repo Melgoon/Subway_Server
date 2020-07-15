@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- namespace속성 : 아래에서 작성한 SQL을 호출할 때 같이 사용된다. -->
+<sqlMap namespace="honey">
+    <select id="selectAll" resultClass="honeyVO">
+		select * from HONEY_COMBI
+	</select>
+    <insert id="insert" parameterClass="honeyVO">
+		insert into HONEY_COMBI values (honey_combi_seq.nextval,#HONEY_NAME#,#HONEY_CONTENT#,#HONEY_GOOD#,#HONEY_BAD#,#MEM_ID#,#HONEY_MENU#)
+	</insert>
+    <select id="selectBtn" resultClass="honeyVO" parameterClass="String">
+		select * from HONEY_COMBI where honey_name = #HONEY_NAME#
+	</select>
+</sqlMap>

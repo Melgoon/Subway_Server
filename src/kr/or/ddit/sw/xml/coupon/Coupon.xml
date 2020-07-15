@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- namespace속성 : 아래에서 작성한 SQL을 호출할 때 같이 사용된다. -->
+<sqlMap namespace="coupon">
+
+	<!--<select id="selectCouponAdr" resultClass="couponPicVO" parameterClass="String">
+		select * from COUPON_PIC where COUPON_PIC_NO=(select b.COUPON_PIC_NO
+		from COUPON_HIS a, COUPON b where a.COUPON_NO = b.COUPON_NO and a.MEM_ID=#data#)
+	</select>-->
+
+	<select id="selectCouponAdr" resultClass="couponPicVO" parameterClass="String">
+		select a.COUPON_PIC_NO,a.COUPON_PIC_ADR  from COUPON_PIC a,
+(select COUPON.COUPON_NO,COUPON.COUPON_PIC_NO from COUPON_HIS, COUPON where coupon_his.COUPON_NO = COUPON.COUPON_NO and COUPON_HIS.MEM_ID=#data#)b
+where a.COUPON_PIC_NO = b.COUPON_PIC_NO
+	</select>
+
+
+	<insert id="insertCouponFromStamp" parameterClass="couponVO">
+		insert into coupon (coupon_no,coupon_name,coupon_price,coupon_pic_no) values ((select nvl(max(coupon_no),0)+1 from coupon),'3000원쿠폰',3000,2)
+	</insert>
+
+
+	<insert id="insertCouponHisFromStamp" parameterClass="couponHisVO">
+		insert into coupon_his (mem_id,coupon_no,col4) values (#mem_id#,(select max(coupon_no) from coupon),'FALSE')
+	</insert>
+
+	<select id="selectMemberBirth" resultClass="memberVO">
+	/*select MEM_ID,MEM_PW,MEM_NAME,MEM_BIRTH,MEM_AGE,MEM_GENDER,MEM_EMAIL,MEM_HP,MEM_ADDR from( select b.*, to_char(to_date(MEM_BIRTH),'MMDD')as birth from( select sysdate, member.* from member)b) where birth = to_char(sysdate,'MMDD')*/
+	select MEM_ID,MEM_PW,MEM_NAME,MEM_BIRTH,MEM_AGE,MEM_GENDER,MEM_EMAIL,MEM_HP,MEM_ADDR from member where MEM_BIRTH = to_char(sysdate,'MM-DD')
+	</select>
+
+
+	<insert id="insertCouponFromStampB" parameterClass="couponVO">
+		insert into coupon (coupon_no,coupon_name,coupon_price,coupon_pic_no) values ((select nvl(max(coupon_no),0)+1 from coupon),'생일축하',3000,1)
+	</insert>
+
+
+</sqlMap>

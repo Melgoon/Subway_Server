@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- namespace속성 : 아래에서 작성한 SQL을 호출할 때 같이 사용된다. -->
+<sqlMap namespace="cart">
+
+	<select id="selectProdAdr" resultClass="prodpicVO" parameterClass="Integer">
+		select * from prod_pic where prod_no = #prod_no#
+	</select>
+
+    <insert id="insert" parameterClass="cartVO">
+		insert into cart (cart_no,cart_price,cart_qty,cart_chk,mem_id,combi_no,prod_no,mtr_no,cart_chk_buy,cart_cont) values ((select nvl(max(cart_no),0)+1 from cart),#cart_price#,#cart_qty#,#cart_chk#,#mem_id#,#combi_no#,#prod_no#,#mtr_no#,#cart_chk_buy#,#cart_cont#)
+	</insert>
+
+	<select id="selectCombiMtrJoin" resultClass="combiMtrJoinVO">
+		select a.*, b.PROD_PRICE
+		from (select FOOD_MTR.mtr_no, mtr_name, mtr_cal, mtr_detail, mtr_div, mtr_pic_no, combi_no, prod_no,combi_count
+			  from FOOD_MTR, COMBI
+			  where FOOD_MTR.MTR_NO = COMBI.MTR_NO)a, prod b
+		where b.PROD_NO = a.PROD_NO
+	</select>
+
+	<select id="selectCart" resultClass="cartVO">
+		select * from cart
+	</select>
+
+	<delete id="deleteCombi">
+		delete from combi
+	</delete>
+
+	<select id="selectCartProdPicJoin" resultClass="cartJoinProdPicVO" parameterClass="String">
+		select a.CART_NO, a.CART_PRICE, a.PROD_NO,a.CART_CONT, a.CART_CHK, a.CART_CHK_BUY, b.PROD_PIC_ADR from cart a, prod_pic b where mem_id = #mem_id# and a.prod_no = b.prod_no and a.cart_chk = 0
+	</select>
+
+	<select id="selectProdName" parameterClass="Integer" resultClass="prodVO">
+		select * from prod where prod_no = #prod_no#
+	</select>
+
+	<update id="updateCartChk" parameterClass="Integer">
+		update cart set cart_chk=1 where cart_no=#cart_no#
+	</update>
+
+	<update id="updateCartChkBuy" parameterClass="Integer">
+		update cart set cart_chk_buy=1 where cart_no=#cart_no#
+	</update>
+
+	<select id="selectOrder" resultClass="cartJoinProdPicVO" parameterClass="String">
+		select a.CART_NO, a.CART_PRICE, a.PROD_NO,a.CART_CONT, a.CART_CHK, a.CART_CHK_BUY, b.PROD_PIC_ADR from cart a, prod_pic b where mem_id = #mem_id# and a.prod_no = b.prod_no and a.cart_chk = 1 and cart_chk_buy = 0
+	</select>
+
+	<insert id="insertOrder" parameterClass="orderVO">
+		insert into order_table (order_no, cart_no, order_qty, order_price, order_date, order_coupon, order_st, prod_no, order_cont, cart_no_string, mem_id) values ((select nvl(max(order_no),0)+1 from order_table),#cart_no#,#order_qty#,#order_price#,to_char(SYSDATE,'YYYY-MM-DD'),#order_coupon#,#order_st#,#prod_no#,#order_cont#,#cart_no_string#,#mem_id#)
+	</insert>
+
+	<delete id="deleteCart" parameterClass="Integer">
+		delete from cart where cart_no=#cart_no#
+	</delete>
+
+
+</sqlMap>

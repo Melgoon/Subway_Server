@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- namespace속성 : 아래에서 작성한 SQL을 호출할 때 같이 사용된다. -->			
+<sqlMap namespace="tellsubmem">
+
+	<insert id="insertTellsubMem" parameterClass="String">
+		insert into tellsub_mem values ((select nvl(max(tellsub_no),0) from tellsub),'1',#data#)
+	</insert>
+
+	<select id="selectUnionTell" parameterClass="String" resultClass="tellVO">
+select tellsub_mem.tellsub_mem_no Tellsub_no, Tellsub_name ,tellsub_content, tellsub_rep, tellsub.tellsub_jijum Tellsub_jijum,
+ tellsub_mem.mem_id,tellsub_visitdate Tellsub_visitdate
+from tellsub,tellsub_mem
+where tellsub_mem.tellsub_mem_no= tellsub.tellsub_no and tellsub_mem.mem_id=#data# AND tellsub.tellsub_rep is not null
+AND tellsub_mem.tellsub_mem_chk='1'
+	</select>
+
+	<update id="updateTellsubMem" parameterClass="tellsubmemVO">
+		update tellsub_mem set tellsub_mem_chk=0 where TELLSUB_MEM_NO =#TellsubMemNo# AND
+	MEM_ID = #MemId#
+	</update>
+
+	<select id="selectTellSubNO" parameterClass="String" resultClass="Integer">
+		select count(tellsub_mem.tellsub_mem_no)
+		from tellsub,tellsub_mem
+		where tellsub_mem.tellsub_mem_no= tellsub.tellsub_no and tellsub_mem.mem_id=#data# AND tellsub.tellsub_rep is not null
+		AND tellsub_mem.tellsub_mem_chk='1'
+	</select>
+
+</sqlMap>
+
+
+
+
+
+

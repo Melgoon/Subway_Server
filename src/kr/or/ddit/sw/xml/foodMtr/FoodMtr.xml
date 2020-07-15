@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- namespace속성 : 아래에서 작성한 SQL을 호출할 때 같이 사용된다. -->
+<sqlMap namespace="foodMtr">
+    <insert id="insert" parameterClass="foodMtrVO">
+		insert into food_mtr values ((select nvl(max(mtr_no),0)+1 from food_mtr), #MTR_NAME#, #MTR_CAL#, #MTR_DETAIL#, #MTR_DIV#, (select max(mtr_pic_no) from mtr_pic))
+	</insert>
+
+    <insert id="insertPic" parameterClass="mtrPicVO">
+		insert into mtr_pic values ((select nvl(max(mtr_pic_no),0)+1 from mtr_pic), #MTR_PIC_ADDR#)
+	</insert>
+
+    <select id="select" resultClass="foodMtrVO">
+		select mtr_no, mtr_name, mtr_cal, mtr_detail, mtr_div from food_mtr order by mtr_no
+	</select>
+
+    <delete id="delete" parameterClass="foodMtrVO">
+		delete from food_mtr where mtr_no = #MTR_NO#
+	</delete>
+
+    <select id="selectdiv" parameterClass="Integer" resultClass="foodMtrVO">
+		select *
+		from(
+			select mtr_no,mtr_name, mtr_cal, MTR_DETAIL, mtr_div, MTR_PIC_ADR
+			from FOOD_MTR a left join MTR_PIC b on a.MTR_PIC_NO = b.MTR_PIC_NO)
+		where MTR_DIV = #data#
+		order by mtr_no
+	</select>
+
+	<insert id="insertCombi" parameterClass="combiVO">
+		insert into combi values (#combi_no#,#prod_no#,#mtr_no#,#combi_count#)
+	</insert>
+</sqlMap>

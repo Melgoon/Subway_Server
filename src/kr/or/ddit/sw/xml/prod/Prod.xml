@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+        PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- namespace속성 : 아래에서 작성한 SQL을 호출할 때 같이 사용된다. -->
+<sqlMap namespace="prod">
+
+    <select id="select" resultClass="prodVO">
+		select prod_no,kate_no,prod_name,prod_price from prod order by prod_no
+	</select>
+
+    <select id="selectKategori" resultClass="kategoriVO">
+		select * from kategori
+	</select>
+
+    <select id="selectMtr" parameterClass="Integer" resultClass="foodMtrVO">
+		select * from food_mtr where mtr_div = #MTR_DIV#
+	</select>
+
+    <insert id="insertProd" parameterClass="prodVO">
+		insert into prod (prod_no,kate_no,prod_name, prod_price) values ((select nvl(max(prod_no),0)+1 from prod),#kate_no#,#prod_name#,#prod_price#)
+	</insert>
+
+    <insert id="insertCombi" parameterClass="combiVO">
+		insert into combi values((select nvl(max(combi_no),0)+1 from combi),(select max(prod_no) from prod),#mtr_no#,#combi_count#)
+	</insert>
+
+    <delete id="delete" parameterClass="prodVO">
+		delete from prod where prod_no = #prod_no#
+	</delete>
+
+    <delete id="deleteCombi" parameterClass="Integer">
+		delete from combi where prod_no = #prod_no#
+	</delete>
+
+    <select id="selectMenuList" resultClass="prodVO">
+		select a.PROD_NO,KATE_NO,PROD_NAME,PROD_PRICE,a.PROD_KAL,prod_source,PROD_DETAIL,PROD_PIC_ADR
+		from PROD a, PROD_PIC b
+		where a.PROD_NO = b.PROD_NO
+		order by a.prod_no
+	</select>
+
+	<select id="selectKate" resultClass="prodVO" parameterClass="Integer">
+		select *
+		from(
+			select a.PROD_NO,KATE_NO,PROD_NAME,PROD_PRICE,a.PROD_KAL,prod_source,PROD_DETAIL,PROD_PIC_ADR
+			from PROD a, PROD_PIC b
+			where a.PROD_NO = b.PROD_NO
+			order by a.prod_no
+			)
+		where KATE_NO = #data#
+	</select>
+
+
+</sqlMap>
